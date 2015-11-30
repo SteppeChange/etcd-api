@@ -30,6 +30,9 @@
  * information.
  */
 
+#ifndef __ETCD_API__
+#define __ETCD_API__
+
 typedef enum {
         ETCD_OK = 0,
         ETCD_PROTOCOL_ERROR,
@@ -212,3 +215,5 @@ etcd_result     etcd_lock (etcd_session session_as_void, char *key,
 etcd_result     etcd_unlock (etcd_session session_as_void, char *key,
                              char *index);
 
+
+#endif // __ETCD_API__

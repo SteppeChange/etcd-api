@@ -35,6 +35,7 @@
 #include <curl/curl.h>
 #include <yajl/yajl_tree.h>
 #include "etcd-api.h"
+#include "ns_turn_utils.h"
 
 
 #define DEFAULT_ETCD_PORT       4001
@@ -74,7 +75,7 @@ MY_YAJL_GET_STRING (yajl_val x)
 void
 print_curl_error (char *intro, CURLcode res)
 {
-        printf("%s: %s\n",intro,curl_easy_strerror(res));
+    TURN_LOG_FUNC(TURN_LOG_LEVEL_ERROR,"curl error: %s: %s\n", intro, curl_easy_strerror(res));
 }
 #else
 #define print_curl_error(intro,res)
@@ -126,7 +127,7 @@ static yajl_val
 my_yajl_tree_get (yajl_val root, char const **path, yajl_type type)
 {
         yajl_val        obj    = root;
-        int             i;
+        size_t             i;
 
         for (;;) {
                 if (!*path) {
@@ -235,6 +236,8 @@ static etcd_result
 etcd_get_one (_etcd_session *session, const char *key, etcd_server *srv, const char *prefix,
               const char *post, curl_callback_t cb, char **stream)
 {
+    UNUSED_ARG(session);
+    
         char            *url;
         CURL            *curl;
         CURLcode        curl_res;
@@ -433,6 +436,8 @@ etcd_set_one (_etcd_session *session, const char *key, const char *value,
               const char *precond, unsigned int ttl, etcd_server *srv,
               char **is_lock)
 {
+    UNUSED_ARG(session);
+    
         char                    *url = NULL;
         char                    *contents       = NULL;
         CURL                    *curl           = NULL;
@@ -751,7 +756,7 @@ _count_matching (const char *text, const char *cset, int result)
         char    *t;
         int     res     = 0;
 
-        for (t = (char *)text; *t; ++t) {
+        for (t = (char *) (unsigned long)text; *t; ++t) {
                 if ((strchr(cset,*t) != NULL) != result) {
                         break;
                 }
